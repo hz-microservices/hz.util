@@ -24,5 +24,5 @@ public interface IdGeneraterFactory {
      * 获取id
      * @return id
      */
-    Long nextId();
+    long nextId();
 }

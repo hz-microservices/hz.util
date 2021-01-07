@@ -23,7 +23,7 @@ public class IdGeneraterFactoryImp implements IdGeneraterFactory {
     }
 
     @Override
-    public Long nextId() {
+    public long nextId() {
         IdGenerater generater = getIdGenerater();
         return generater.nextId();
     }
