@@ -27,4 +27,6 @@ dependencies {
     implementation 'com.google.guava:guava:29.0-jre'
 
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
+
+    testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.30'
 }

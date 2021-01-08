@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * 53位id生成
  * |--------|--------|--------|--------|--------|--------|--------|--------|
  * |00000000|00011111|11111111|11111111|11111111|11111111|11111111|11111111| 53位id
- * |--------|---xxxxx|xxxxxxxx|xxxxxxxx|xxxxxxxx|xxx-----|--------|--------| 时间戳32位
+ * |--------|---xxxxx|xxxxxxxx|xxxxxxxx|xxxxxxxx|xxx-----|--------|--------| 时间戳32位，最大支持106年
  * |--------|--------|--------|--------|--------|---xxxxx|xxxxxxxx|--------| 自增13位，支持每秒生成8192个id
  * |--------|--------|--------|--------|--------|--------|--------|xxxxxxxx| 机器码8位，支持256台机器
  * 
@@ -21,8 +21,8 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class Client53BitIdGeneraterImp implements IdGenerater {
-
-    //private static final Logger logger = LoggerFactory.getLogger(Client53BitIdGeneraterImp.class);
+    
+    private static final Logger logger = LoggerFactory.getLogger(Client53BitIdGeneraterImp.class);
     /**
      * 计算2000-01-01的时间戳（秒）
     */ 
@@ -50,11 +50,10 @@ public class Client53BitIdGeneraterImp implements IdGenerater {
      * @return
      */
     private synchronized long nextId(long epochSecond) {
-
         // 处理时钟回拨问题
         if (epochSecond < lastEpoch) {
             // clock is turn back
-            //logger.warn("clock is back: " + epochSecond + " from previous:" + lastEpoch);
+            logger.warn("clock is back: " + epochSecond + " from previous:" + lastEpoch);
             epochSecond = lastEpoch;
         }
         // 如果当前时间（秒）不等于最后获取id时间
@@ -71,7 +70,7 @@ public class Client53BitIdGeneraterImp implements IdGenerater {
         long next = offset & MAX_NEXT;
 
         if(next == 0) {
-            //logger.warn("当前时间的自增id已经到达最大值：" + epochSecond);
+            logger.warn("当前时间的自增id已经到达最大值：" + epochSecond);
             // 向下一秒借id
             return nextId(epochSecond + 1);
         }
@@ -102,10 +101,11 @@ public class Client53BitIdGeneraterImp implements IdGenerater {
             String lastAddress = addresses[addresses.length - 1];
             long machineId = Long.valueOf(lastAddress);
 
+            // 当前时间戳减一个固定时间戳的好处是可以使可用时间变长
             return ((epochSecond - OFFSET) << 21) | next << 8 | machineId ;
 
         } catch (UnknownHostException e) {
-            //logger.warn("unable to get host name. set server id = 0.");
+            logger.warn("unable to get host name. set server id = 0.");
         }
 
         return 0;
