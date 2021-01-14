@@ -50,6 +50,7 @@ public class Client53BitIdGeneraterImp implements IdGenerater {
      * @return
      */
     private synchronized long nextId(long epochSecond) {
+        logger.info("start nextid");
         // 处理时钟回拨问题
         if (epochSecond < lastEpoch) {
             // clock is turn back

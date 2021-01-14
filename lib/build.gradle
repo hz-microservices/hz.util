@@ -9,6 +9,69 @@
 plugins {
     // Apply the java-library plugin for API and implementation separation.
     id 'java-library'
+    id 'maven-publish'
+}
+
+group = 'hz'
+version = '0.1'
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId = 'hz-util'
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'hz util'
+                description = 'hz util'
+                url = 'https://github.com/hz-microservices/hz.util'
+                properties = [
+                    myProp: "value",
+                    "prop.with.dots": "anotherValue"
+                ]
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'hz'
+                        name = 'hz'
+                        email = '554332816@qq.com'
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            //def releasesRepoUrl = "https://mvnrepository.com/repos/releases"
+            //def snapshotsRepoUrl = "https://mvnrepository.com/repos/snapshots"
+            //url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            name = "MyRepo"
+            url = "$buildDir/repos"
+        }
+    }
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
 }
 
 repositories {
@@ -20,13 +83,12 @@ dependencies {
     // Use JUnit test framework.
     testImplementation 'junit:junit:4.13'
 
+    testImplementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.30'
+
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api 'org.apache.commons:commons-math3:3.6.1'
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation 'com.google.guava:guava:29.0-jre'
-
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
-
-    testCompile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.30'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
 }
